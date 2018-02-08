@@ -30,6 +30,7 @@ Curve evalBezier( const vector< Vector3f >& P, unsigned steps )
     }
 	cout << "kuhan joku testi";
 	cout << "toinene testi";
+	cout << "lol eri kone";
     // TODO:
     // You should implement this function so that it returns a Curve
     // (e.g., a vector< CurvePoint >).  The variable "steps" tells you
