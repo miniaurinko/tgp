@@ -28,9 +28,7 @@ Curve evalBezier( const vector< Vector3f >& P, unsigned steps )
         cerr << "evalBezier must be called with 3n+1 control points." << endl;
         exit( 0 );
     }
-	cout << "kuhan joku testi";
-	cout << "toinene testi";
-	cout << "lol eri kone";
+
     // TODO:
     // You should implement this function so that it returns a Curve
     // (e.g., a vector< CurvePoint >).  The variable "steps" tells you

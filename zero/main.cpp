@@ -5,99 +5,103 @@
 #include <vector>
 #include "vecmath.h"
 using namespace std;
+
 // Tekijä: Ville Kuokkanen
 // Arvio: 3/5
-// Ominaisuudet: perusvaatimusten lisäksi objektin pyöritys ja värien sulava vaihtuminen
+// Ominaisuudet: perusvaatimusten lisäksi objektin pyöritys ja värin sulava vaihtuminen
 // Vaikenta tehtävässä oli ymmärtää millä tavalla .obj tiedostosta rivit kannattaisi tallentaa
 // ja millä tavalla ne saa piirrettyä oikein
+//
+// luettava tiedosto annetaan komentoriviargumenttina
 
 
 
 
 // This is the list of points (3D vectors)
-vector<vector<float>> vecv;
+//vector<vector<float>> vecv;
+vector<Vector3f> vecv;
 
 // This is the list of normals (also 3D vectors)
-vector<vector<float>> vecn;
+vector<Vector3f> vecn;
 
 // This is the list of faces (indices into vecv and vecn)
 vector<vector<unsigned> > vecf;
-vector<Vector3f> vertexIndices;
-vector<Vector3f> normalIndices;
 
 // You will need more global variables to implement color and position changes
 int counter = 0;
 int tilanne = 0;
 bool start = false;
-bool väri_aloita = false;
+bool color_aloita = false;
 int kulma = 0;
 int intervalli = 16;
-float väri_index = 0;
-GLfloat väri[4] = { 1.0, 0.0, 0.0, 1.0 };
+int color_index = 0;
+GLfloat color[4] = { 1.0, 0.0, 0.0, 1.0 };
 GLfloat horizontal = 1.0f;
 GLfloat vertical = 1.0f;
-
-void värifunktio(int t)
+void colorfunktio(int t)
 {
-	if (väri_aloita)
+	if (color_aloita)
 	{
-		if (väri[1] > 1.0)
+
+
+		if (color[1] > 1.0)
 		{
 			tilanne = 1;
 		}
-		if (väri[0] < 0.0)
+		if (color[0] < 0.0)
 		{
 			tilanne = 2;
 		}
-		if (väri[2] > 1.0)
+		if (color[2] > 1.0)
 		{
 			tilanne = 3;
 		}
-		if (väri[1] < 0.0)
+		if (color[1] < 0.0)
 		{
 			tilanne = 4;
 		}
-		if (väri[0] > 1.0)
+		if (color[0] > 1.0)
 		{
 			tilanne = 5;
 		}
-		if (väri[2] < 0.0)
+		if (color[2] < 0.0)
 		{
 			tilanne = 0;
-			väri[0] = 1.0;
-			väri[1] = 0.0;
-			väri[2] = 0.0;
-			väri[3] = 1.0;
+			color[0] = 1.0;
+			color[1] = 0.0;
+			color[2] = 0.0;
+			color[3] = 1.0;
 		}
 
 		if (tilanne == 0)
 		{
-			väri[1] += 0.1;
+			color[1] += 0.1;
 		}
 		if (tilanne == 1)
 		{
-			väri[0] -= 0.1;
+			color[0] -= 0.1;
 		}
 		if (tilanne == 2)
 		{
-			väri[2] += 0.1;
+			color[2] += 0.1;
 		}
 		if (tilanne == 3)
 		{
-			väri[1] -= 0.1;
+			color[1] -= 0.1;
 		}
 		if (tilanne == 4)
 		{
-			väri[0] += 0.1;
+			color[0] += 0.1;
 		}
 		if (tilanne == 5)
 		{
-			väri[2] -= 0.1;
+			color[2] -= 0.1;
 		}
-
+		
 	}
+
 	glutPostRedisplay();
-	glutTimerFunc(75, värifunktio, 0);
+	glutTimerFunc(75, colorfunktio, 0);
 }
 
 void aikafunktio(int t)
@@ -128,11 +132,8 @@ void keyboardFunc( unsigned char key, int x, int y )
         exit(0);
         break;
     case 'c':
-        // add code to change color here
-		//counter++;
-		//cout << "Unhandled key press " << key << "." << endl; 
-		if (väri_aloita) väri_aloita = false;
-		else väri_aloita = true;
+		if (color_aloita) color_aloita = false;
+		else color_aloita = true;
 		break;
         break;
 	case 'r':
@@ -181,29 +182,23 @@ void specialFunc( int key, int x, int y )
 
 void loadObject()
 {
+	
 	glBegin(GL_TRIANGLES);
+	for (unsigned int i = 0; i < vecf.size(); i++) {
 
-	for (unsigned int i = 0; i < vecf.size(); i++)
-	{
+		vector<unsigned> &v = vecf[i];
+
 		
-		unsigned a = vecf[i][0];
-		unsigned c = vecf[i][1];
-		unsigned d = vecf[i][2];
-		unsigned f = vecf[i][3];
-		unsigned g = vecf[i][4];
-		unsigned ii = vecf[i][5];
-
-		glNormal3d(vecn[c - 1][0], vecn[c - 1][1], vecn[c - 1][2]);
-		glVertex3d(vecv[a - 1][0], vecv[a - 1][1], vecv[a - 1][2]);
-		glNormal3d(vecn[f - 1][0], vecn[f - 1][1], vecn[f - 1][2]);
-		glVertex3d(vecv[d - 1][0], vecv[d - 1][1], vecv[d - 1][2]);
-		glNormal3d(vecn[ii - 1][0], vecn[ii - 1][1], vecn[ii - 1][2]);
-		glVertex3d(vecv[g - 1][0], vecv[g - 1][1], vecv[g - 1][2]);
-
+		glNormal3d(vecn[v[2] - 1][0], vecn[v[2] - 1][1], vecn[v[2] - 1][2]);
+		glVertex3d(vecv[v[0] - 1][0], vecv[v[0] - 1][1], vecv[v[0] - 1][2]);
+		glNormal3d(vecn[v[5] - 1][0], vecn[v[5] - 1][1], vecn[v[5] - 1][2]);
+		glVertex3d(vecv[v[3] - 1][0], vecv[v[3] - 1][1], vecv[v[3] - 1][2]);
+		glNormal3d(vecn[v[8] - 1][0], vecn[v[8] - 1][1], vecn[v[8] - 1][2]);
+		glVertex3d(vecv[v[6] - 1][0], vecv[v[6] - 1][1], vecv[v[6] - 1][2]);
+		
 	}
-
-
 	glEnd();
+
 }
 
 // This function is responsible for displaying the object.
@@ -227,13 +222,13 @@ gluLookAt(3.0 * sin(kulma * 3.14 / 180), 0.0, 3.0 * cos(kulma * 3.14 / 180),
 // Set material properties of object
 
 // Here are some colors you might use - feel free to add more
-GLfloat diffColors[4][4] = { {1.0, 0.5, 0.9},
+GLfloat diffColors[4][4] = { {1.0, 0.5, 0.9, 1.0},
 							 {0.9, 0.5, 0.5, 1.0},
 							 {0.5, 0.9, 0.3, 1.0},
 							 {0.3, 0.8, 0.9, 1.0} };
 
 // Here we use the first color entry as the diffuse color
-glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, väri);
+glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
 
 // Define specular color and shininess
 GLfloat specColor[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -295,9 +290,10 @@ void reshapeFunc(int w, int h)
 
 
 
-void loadInput()
+void loadInput(char* arg)
 {
-	FILE * file = fopen("./garg.obj", "r");
+
+	FILE * file = fopen(arg, "r");
 	if (file == NULL) {
 		printf("Tiedostoa ei saa auki!\n");
 		return;
@@ -311,50 +307,52 @@ void loadInput()
 
 		if (strcmp(lukija, "v") == 0)
 		{
-			vector<float> vert;
+			Vector3f v;
 			float vertx;
 			float verty;
 			float vertz;
 			fscanf(file, "%f %f %f\n", &vertx, &verty, &vertz);
-			vert.push_back(vertx);
-			vert.push_back(verty);
-			vert.push_back(vertz);
-			vecv.push_back(vert);
+	
+			v[0] = vertx;
+			v[1] = verty;
+			v[2] = vertz;
+			vecv.push_back(v);
 		}
 		else if (strcmp(lukija, "vn") == 0)
 		{
-			vector<float> normaali;
+			Vector3f v;
 			float normx;
 			float normy;
 			float normz;
 			fscanf(file, "%f %f %f\n", &normx, &normy, &normz);
-			normaali.push_back(normx);
-			normaali.push_back(normy);
-			normaali.push_back(normz);
-			//cout << normx; cout << " "; cout << normy; cout << " "; cout << normz; cout << "\n";
-			vecn.push_back(normaali);
+			v[0] = normx;
+			v[1] = normy;
+			v[2] = normz;
+
+			vecn.push_back(v);
 		}
 	
 		else if (strcmp(lukija, "f") == 0) 
 		{
-			std::string vertex1, vertex2, vertex3;
-			unsigned vertexIndex[3], uvIndex[3], normalIndex[3];
-			vector<unsigned> vektorit;
-			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
+			unsigned a, b, c, d, e, f, g, h, i;
+			vector<unsigned> vec;
+			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &a, &b, &c, &d, &e, &f, &g, &h, &i);
 			if (matches != 9) {
 				printf("Ei saada auki\n");
 				return;
 			}
-			vektorit.push_back(vertexIndex[0]);
-			vektorit.push_back(normalIndex[0]);
+		
+			vec.push_back(a);
+			vec.push_back(b);
+			vec.push_back(c);
+			vec.push_back(d);
+			vec.push_back(e);
+			vec.push_back(f);
+			vec.push_back(g);
+			vec.push_back(h);
+			vec.push_back(i);
+			vecf.push_back(vec);
 			
-			vektorit.push_back(vertexIndex[1]);
-			vektorit.push_back(normalIndex[1]);
-			
-			vektorit.push_back(vertexIndex[2]);
-			vektorit.push_back(normalIndex[2]);
-			
-			vecf.push_back(vektorit);
 		}
 	}
 }
@@ -363,7 +361,7 @@ void loadInput()
 // Set up OpenGL, define the callbacks and start the main loop
 int main( int argc, char** argv )
 {
-    loadInput();
+    loadInput(argv[1]);
 
     glutInit(&argc,argv);
 
@@ -389,7 +387,7 @@ int main( int argc, char** argv )
     glutDisplayFunc( drawScene );
 
 	glutTimerFunc(intervalli, aikafunktio, 0);
-	glutTimerFunc(75, värifunktio, 0);
+	glutTimerFunc(75, colorfunktio, 0);
     // Start the main loop.  glutMainLoop never returns.
     glutMainLoop( );
 

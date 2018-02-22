@@ -45,11 +45,39 @@ Surface makeGenCyl(const Curve &profile, const Curve &sweep )
         cerr << "genCyl profile curve must be flat on xy plane." << endl;
         exit(0);
     }
+	//kappale, jota kuljetetaan
+	for (unsigned i = 0; i < profile.size(); i++) {
+		//kappale jonka ympäri pyöräytetään
+		for (unsigned j = 0; j < sweep.size(); j++) {
 
-    // TODO: Here you should build the surface.  See surf.h for details.
+			//normaali, tangentti, binormaali ja V
+			Matrix4f nbtv(sweep[j].N[0], sweep[j].B[0], sweep[j].T[0], sweep[j].V[0],
+						  sweep[j].N[1], sweep[j].B[1], sweep[j].T[1], sweep[j].V[1],
+						  sweep[j].N[2], sweep[j].B[2], sweep[j].T[2], sweep[j].V[2],
+						  0., 0., 0., 1.);
 
-    cerr << "\t>>> makeGenCyl called (but not implemented).\n\t>>> Returning empty surface." <<endl;
+			//paikan laskeminen profiilikkappaleelle
+			Vector4f pintaV_alku = nbtv*(Vector4f(profile[i].V[0], profile[i].V[1], profile[i].V[2], 1.f));
+			Vector3f pintavertex = Vector3f(pintaV_alku[0], pintaV_alku[1], pintaV_alku[2]);
+			Vector3f pintanormaali = nbtv.getSubmatrix3x3(0, 0).transposed().inverse()*profile[i].N;
 
+			surface.VN.push_back(-1 * pintanormaali);
+			surface.VV.push_back(pintavertex);
+		}
+	}
+		for (unsigned k = 0; k<surface.VV.size() - (sweep.size()); k++) {
+
+			Tup3u ekatkolme;		
+			Tup3u tokatkolme;
+			if ((k + 1) % (sweep.size()) != 0)
+			{
+				ekatkolme = Tup3u(k + 1, k, k + sweep.size());
+				tokatkolme = Tup3u(k + 1, k + sweep.size(), k + 1 + sweep.size());
+			}
+			surface.VF.push_back(ekatkolme);
+			surface.VF.push_back(tokatkolme);
+
+	}
     return surface;
 }
 
