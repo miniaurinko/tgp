@@ -1,0 +1,4 @@
+﻿  SkeletalModel.cpp
+SkeletalModel.cpp(57): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+SkeletalModel.cpp(80): warning C4018: '<': signed/unsigned mismatch
+  a2.vcxproj -> C:\kurssit\graf\two\a_2_vs2017\distrib\Debug\a2.exe
