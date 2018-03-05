@@ -1,0 +1,5 @@
+﻿  main.cpp
+c:\dev\graf\tgp\four\distrib\Group.h(33): warning C4018: '<': signed/unsigned mismatch
+main.cpp(45): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/OPT:ICF' specification
+  a4.vcxproj -> C:\dev\graf\tgp\four\distrib\Release\a4.exe
